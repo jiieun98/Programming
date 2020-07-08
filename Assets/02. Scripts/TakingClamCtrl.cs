@@ -13,13 +13,21 @@ public class TakingClamCtrl : MonoBehaviour
     public static TakingClamCtrl instance;
 
     // 조개 (임시로 5개)
-    public GameObject[] Shell = new GameObject[5];
-
+    public GameObject[] Clam = new GameObject[5];
     // 화살표 4*4개씩
     public GameObject[] arrow = new GameObject[16];
 
     // 삼각함수 (Mathf는 과부하가 있어서 Start 함수에서 계산하고 시작)
     public float[,] trifunc = new float[4, 2];
+
+    // 화살표 숫자 임시 저장
+    private int[] arrownum = new int[7];
+    private int currnum;
+    private Vector3[] arrowpos = new Vector3[4];
+    private int ClamSize;
+
+    // 부딪힌 조개 오브젝트 (Inseon.cs에서 받아옴)
+    public GameObject colobj;
 
     void Start()
     {
@@ -46,5 +54,110 @@ public class TakingClamCtrl : MonoBehaviour
         //    GameObject tmpShell = (GameObject)Instantiate(Shell[randnum], 
         //       new Vector3(RandomX, RandomY, 0), Quaternion.identity);
         //}
+    }
+
+    // 화살표 생성 함수
+    // 조개는 여러 개가 생성되기 때문에 TakingClamCtrl에서 시작할 때
+    // 화살표 생성한 것과 삼각함수 계산한 것을 불러오는 형식으로 코딩함
+    public void MakeArrow()
+    {
+        currnum = 0;
+
+        for (int i = 0; i < 4; ++i)
+        {
+            int randnum = Random.Range(0, 4);
+
+            arrownum[i] = randnum + i * 4;
+
+            arrow[arrownum[i]].transform.position =
+                new Vector3(colobj.transform.position.x + trifunc[i, 0],
+                colobj.transform.position.y + trifunc[i, 1], 0f);
+
+            arrow[arrownum[i]].SetActive(true);
+        }
+    }
+
+    // 화살표 생성 함수 2번째 버전
+    // arrowpos라는 화살표가 나타나는 위치를 아예 저장시킴
+    // 초기에는 4개만 SetActive(true)
+    public void MakeArrow_2(int size)
+    {
+        currnum = 0;
+        ClamSize = size;
+
+        for (int i = 0; i < ClamSize; ++i)
+        {
+            int randnum = Random.Range(0, 4);
+            arrownum[i] = (randnum + i * 4) % 16;
+        }
+
+        for (int i = 0; i < 4; ++i)
+        {
+            arrowpos[i] = new Vector3(colobj.transform.position.x + trifunc[i, 0],
+                colobj.transform.position.y + trifunc[i, 1], 0f);
+
+            arrow[arrownum[i]].transform.position =
+                new Vector3(arrowpos[i].x, arrowpos[i].y, 0f);
+
+            arrow[arrownum[i]].SetActive(true);
+        }
+    }
+
+    // 화살표 전체 제거 함수 (틀렸을 경우, E로 취소한 경우에 호출)
+    public void RemoveArrowAll()
+    {
+        currnum = 0;
+
+        for (int i = 0; i < ClamSize; ++i)
+            arrow[arrownum[i]].SetActive(false);
+    }
+
+    // 화살표 하나씩 제거하는 함수
+    public void RemoveArrow(int key)
+    {
+        // 눌러야 할 방향키
+        int dir = arrownum[currnum] % 4;
+
+        // 눌러야 할 방향키랑 입력한 방향키가 같으면 제거
+        if (key == dir)
+        {
+            arrow[arrownum[currnum]].SetActive(false);
+
+            currnum++;
+
+            // ver2
+            int tmpnum = 0;
+            for (int i = currnum; i < ClamSize; ++i)
+            {
+                if (tmpnum == 3)
+                {
+                    arrow[arrownum[i]].SetActive(true);
+
+                    arrow[arrownum[i]].transform.position =
+                        new Vector3(arrowpos[tmpnum].x, arrowpos[tmpnum].y, 0f);
+
+                    break;
+                }
+
+                arrow[arrownum[i]].transform.position =
+                    new Vector3(arrowpos[tmpnum].x, arrowpos[tmpnum].y, 0f);
+                tmpnum++;
+            }
+        }
+        // 다르면 처음부터
+        else
+        {
+            currnum = 0;
+            RemoveArrowAll();
+            MakeArrow_2(ClamSize);
+        }
+
+        // 다 맞추면 조개는 사라지고 헤엄 가능
+        if (currnum == ClamSize)
+        {
+            colobj.SetActive(false);
+            Inseon.speed = 5f;
+            Inseon.isTaking = false;
+        }
     }
 }

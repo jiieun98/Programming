@@ -18,6 +18,7 @@ public class Inseon : MonoBehaviour
     public static bool isTaking = false;
     // 조개와 부딪혔는지 판단하는 변수
     private bool isClamCollide = false;
+    private int ClamSize;
 
     void Awake()
     {
@@ -36,12 +37,12 @@ public class Inseon : MonoBehaviour
                 isTaking = true;
                 speed = 0f;
 
-                ShellCtrl.instance.MakeArrow();
+                TakingClamCtrl.instance.MakeArrow_2(ClamSize);
             }
             // 충돌 중이고 물질 중이면
             else if (isClamCollide && isTaking)
             {
-                ShellCtrl.instance.RemoveArrowAll();
+                TakingClamCtrl.instance.RemoveArrowAll();
 
                 speed = 5f;
                 isTaking = false;
@@ -59,7 +60,7 @@ public class Inseon : MonoBehaviour
             else if (Input.GetKeyDown(KeyCode.UpArrow)) presskey = 2;
             else if (Input.GetKeyDown(KeyCode.DownArrow)) presskey = 3;
 
-            if(presskey != -1) ShellCtrl.instance.RemoveArrow(presskey);
+            if(presskey != -1) TakingClamCtrl.instance.RemoveArrow(presskey);
         }
     }
 
@@ -81,10 +82,17 @@ public class Inseon : MonoBehaviour
     void OnTriggerEnter2D(Collider2D collision)
     {
         // 조개랑 부딪히면
-        if (collision.gameObject.tag == "Shellfish")
+        if (collision.CompareTag("SmallClam"))
         {
             isClamCollide = true;
-            ShellCtrl.instance.colobj = collision.gameObject;
+            TakingClamCtrl.instance.colobj = collision.gameObject;
+            ClamSize = 4;
+        }
+        else if (collision.CompareTag("BigClam"))
+        {
+            isClamCollide = true;
+            TakingClamCtrl.instance.colobj = collision.gameObject;
+            ClamSize = 7;
         }
     }
 

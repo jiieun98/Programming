@@ -5,8 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Machine
-  - Shellfish
   - Inseon
+  - SmallClam
+  - BigClam
   layers:
   - Default
   - TransparentFX

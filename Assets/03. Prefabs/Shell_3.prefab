@@ -11,10 +11,9 @@ GameObject:
   - component: {fileID: 3806552309144126407}
   - component: {fileID: 5481497634678781773}
   - component: {fileID: -6688074578411795963}
-  - component: {fileID: -7710086074340634398}
   m_Layer: 0
   m_Name: Shell_3
-  m_TagString: Shellfish
+  m_TagString: SmallClam
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -100,15 +99,3 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.32
---- !u!114 &-7710086074340634398
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3061177032036595028}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75e15c6a3441b8c44897d06b2766c7e7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
