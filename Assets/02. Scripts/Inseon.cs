@@ -37,11 +37,13 @@ public class Inseon : MonoBehaviour
                 isTaking = true;
                 speed = 0f;
 
-                TakingClamCtrl.instance.MakeArrow_2(ClamSize);
+                // 화살표 생성
+                TakingClamCtrl.instance.MakeArrow(ClamSize);
             }
             // 충돌 중이고 물질 중이면
             else if (isClamCollide && isTaking)
             {
+                // 화살표 제거
                 TakingClamCtrl.instance.RemoveArrowAll();
 
                 speed = 5f;

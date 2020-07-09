@@ -1,7 +1,7 @@
 ﻿// ------------------------------------
 // TakingClamCtrl.cs
 //
-// 물질 시스템 Ctrl
+// 물질 시스템 컨트롤러
 // ------------------------------------
 
 using System.Collections;
@@ -20,7 +20,6 @@ public class TakingClamCtrl : MonoBehaviour
     // 삼각함수 (Mathf는 과부하가 있어서 Start 함수에서 계산하고 시작)
     public float[,] trifunc = new float[4, 2];
 
-    // 화살표 숫자 임시 저장
     private int[] arrownum = new int[7];
     private int currnum;
     private Vector3[] arrowpos = new Vector3[4];
@@ -42,6 +41,7 @@ public class TakingClamCtrl : MonoBehaviour
             rad -= 60;
         }
 
+        // 객체 생성
         //for (int i = 0; i < 5; ++i)
         //{
         //    // 랜덤 좌표
@@ -57,40 +57,21 @@ public class TakingClamCtrl : MonoBehaviour
     }
 
     // 화살표 생성 함수
-    // 조개는 여러 개가 생성되기 때문에 TakingClamCtrl에서 시작할 때
-    // 화살표 생성한 것과 삼각함수 계산한 것을 불러오는 형식으로 코딩함
-    public void MakeArrow()
-    {
-        currnum = 0;
-
-        for (int i = 0; i < 4; ++i)
-        {
-            int randnum = Random.Range(0, 4);
-
-            arrownum[i] = randnum + i * 4;
-
-            arrow[arrownum[i]].transform.position =
-                new Vector3(colobj.transform.position.x + trifunc[i, 0],
-                colobj.transform.position.y + trifunc[i, 1], 0f);
-
-            arrow[arrownum[i]].SetActive(true);
-        }
-    }
-
-    // 화살표 생성 함수 2번째 버전
-    // arrowpos라는 화살표가 나타나는 위치를 아예 저장시킴
-    // 초기에는 4개만 SetActive(true)
-    public void MakeArrow_2(int size)
+    public void MakeArrow(int size)
     {
         currnum = 0;
         ClamSize = size;
 
+        // randnum은 화살표 4방향 중 하나를 선택
+        // arrownum은 활성화시킬 화살표 번호를 넣을 배열
         for (int i = 0; i < ClamSize; ++i)
         {
             int randnum = Random.Range(0, 4);
             arrownum[i] = (randnum + i * 4) % 16;
         }
 
+        // arrowpos라는 화살표가 나타나는 위치를 아예 저장시킴
+        // 초기에는 4개만 SetActive(true)
         for (int i = 0; i < 4; ++i)
         {
             arrowpos[i] = new Vector3(colobj.transform.position.x + trifunc[i, 0],
@@ -125,10 +106,12 @@ public class TakingClamCtrl : MonoBehaviour
 
             currnum++;
 
-            // ver2
+            // tmpnum은 SetActive(true)된 화살표 개수
             int tmpnum = 0;
             for (int i = currnum; i < ClamSize; ++i)
             {
+                // 4번째 화살표
+                // 화살표는 최대 4개만 띄울거니까 break
                 if (tmpnum == 3)
                 {
                     arrow[arrownum[i]].SetActive(true);
@@ -139,6 +122,7 @@ public class TakingClamCtrl : MonoBehaviour
                     break;
                 }
 
+                // 화살표 위로 당겨옴
                 arrow[arrownum[i]].transform.position =
                     new Vector3(arrowpos[tmpnum].x, arrowpos[tmpnum].y, 0f);
                 tmpnum++;
@@ -149,7 +133,7 @@ public class TakingClamCtrl : MonoBehaviour
         {
             currnum = 0;
             RemoveArrowAll();
-            MakeArrow_2(ClamSize);
+            MakeArrow(ClamSize);
         }
 
         // 다 맞추면 조개는 사라지고 헤엄 가능
