@@ -11,6 +11,7 @@ using UnityEngine;
 public class Inseon : MonoBehaviour
 {
     public static float speed = 5f;
+    private const float defaultSpeed = 5f;
     private Rigidbody2D rigid;
     private Vector3 movement;
 
@@ -19,6 +20,15 @@ public class Inseon : MonoBehaviour
     // 조개와 부딪혔는지 판단하는 변수
     private bool isClamCollide = false;
     private int ClamSize;
+
+    private float timer = 0f;
+
+    public static bool inkAttacked = false;
+    public static bool isTrapped = false;
+    public static bool isEscaped = false;
+    public Transform trap;
+    public Transform Escape;
+
 
     void Awake()
     {
@@ -62,8 +72,29 @@ public class Inseon : MonoBehaviour
             else if (Input.GetKeyDown(KeyCode.UpArrow)) presskey = 2;
             else if (Input.GetKeyDown(KeyCode.DownArrow)) presskey = 3;
 
-            if(presskey != -1) TakingClamCtrl.instance.RemoveArrow(presskey);
+            if (presskey != -1) TakingClamCtrl.instance.RemoveArrow(presskey);
         }
+
+        if (speed < defaultSpeed && inkAttacked) // 먹물에 맞아서 속도가 줄어들면
+        {
+            RecoverSpeed(5f);   // 5초 후 원래 속도로 회복
+        }
+
+        if (isTrapped) // 미역에 닿으면
+        {
+            GotoTarget(trap, 10); // 미역의 중간지점으로 이동
+        }
+
+        if (isEscaped) // 물질 끝나면 탈출
+        {
+            GotoTarget(Escape, 20);
+        }
+
+        if (transform.position == Escape.position)
+        {
+            isEscaped = false;
+        }
+
     }
 
     void FixedUpdate()
@@ -96,10 +127,32 @@ public class Inseon : MonoBehaviour
             TakingClamCtrl.instance.colobj = collision.gameObject;
             ClamSize = 7;
         }
+        else if (collision.CompareTag("Seaweed")) // 미역이랑 부딫히면
+        {
+            isClamCollide = true;
+            TakingClamCtrl.instance.colobj = collision.gameObject;
+            ClamSize = Random.Range(4, 6); // 인선이 손 콜라이더가 미역 콜라이더 밖에 있으면 화살표가 안뜸..
+        }
     }
 
     void OnTriggerExit2D(Collider2D collision)
     {
         isClamCollide = false;
     }
+
+    void RecoverSpeed(float recoveryTime) // 속도 회복 함수
+    {
+        if (timer > recoveryTime)
+        {
+            speed = defaultSpeed;
+            inkAttacked = false;
+        }
+        timer += Time.deltaTime;
+    }
+
+    public void GotoTarget(Transform Target, float speed)
+    {
+        transform.position = Vector3.MoveTowards(transform.position, Target.position, speed * Time.deltaTime);
+    }
+
 }

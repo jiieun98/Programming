@@ -137,11 +137,17 @@ public class TakingClamCtrl : MonoBehaviour
         }
 
         // 다 맞추면 조개는 사라지고 헤엄 가능
-        if (currnum == ClamSize)
+        if (currnum == ClamSize && (colobj.CompareTag("SmallClam") || colobj.CompareTag("BigClam")))
         {
             colobj.SetActive(false);
             Inseon.speed = 5f;
             Inseon.isTaking = false;
+        }
+        else if (currnum == ClamSize && colobj.CompareTag("Seaweed")) // 미역은 사라지지 않고 탈출됨
+        {
+            Inseon.speed = 5f;
+            Inseon.isTaking = false;
+            Inseon.isEscaped = true;
         }
     }
 }
